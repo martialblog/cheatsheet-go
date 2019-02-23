@@ -1,0 +1,7 @@
+{
+  "name": "git",
+  "remote": false,
+  "cheats": {
+    "git clone": "Clone a repo"
+  }
+}
