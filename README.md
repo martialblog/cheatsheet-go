@@ -1,10 +1,12 @@
 # Commandline Cheatsheets
 
-Everybody likes cheatsheets. If you're like me and use lots of different tools but you can't remember all those cool shortcuts to impress your colleagues.
+Everybody likes cheatsheets! If you're like me and use lots of different tools but you can't remember all those cool shortcuts to impress your colleagues.
 
-Sure, there are lots of PDFs out there with everything you need. But are you really gonna have an PDF reader next to your terminal to look up shortcuts? Come on, who are we kidding?
+Sure, there are lots of PDFs out there with everything you need. But are you really gonna have an PDF reader next to your terminal to look up shortcuts? Come on, who are we kidding? And who wants to print something on paper? What year is it? 1451?
 
-I'm trying to solve that problem by putting the cheatsheets where they belong. The terminal you're working in!
+Let's solve that by putting the cheatsheets where they belong: the terminal!
+
+**TL;DR**
 
 - Cheatsheets directly in your terminal
 - Open-Format so you can customize/add/share
