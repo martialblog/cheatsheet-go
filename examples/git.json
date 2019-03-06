@@ -2,6 +2,8 @@
   "name": "git",
   "remote": false,
   "cheats": {
-    "git clone": "Clone a repo"
+    "git clone": "Clone a repo",
+    "git pull": "Fetch from another repo or branch",
+    "git commit": "Commit all staged files"
   }
 }

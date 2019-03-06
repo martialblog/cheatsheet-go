@@ -9,6 +9,7 @@ import (
 	"os"
 	"path"
 	"net/http"
+	"github.com/gookit/color"
 )
 
 var (
@@ -25,46 +26,56 @@ type Cheatsheet struct {
 	Cheats map[string] string
 }
 
+// Checks for the error and prints it to the console
+func Log(err error) {
+	if err != nil {
+		color.Warn.Println(err)
+	}
+}
+
+// Checks for the error and exists if there is one
+func ExitIf(err error) {
+	if err != nil {
+		color.Error.Println(err)
+		os.Exit(1)
+	}
+}
+
+// Reads the JSON file at the path and returns a Cheatsheet struct
 func readCheatsheet(path string) (result Cheatsheet, err error) {
 	// Read JSON file
 	file, err := ioutil.ReadFile(path)
-	if err != nil {
-		fmt.Println(err)
-	}
+	ExitIf(err)
 
 	// Parse JSON and return
 	if err := json.Unmarshal(file, &result); err != nil {
-		fmt.Println(err)
+		Log(err)
 	}
 
 	return result, err
 }
 
-func checkOrCreateDir(path string) error {
-	var err error
-
+// Checks for a directory and creates it if necessary
+func checkOrCreateDir(path string) {
 	// Check if path exists and create directory if not
 	if err := os.MkdirAll(path, 0755); err != nil {
-		fmt.Println(err)
+		ExitIf(err)
 	}
-
-	return err
 }
 
+// Loads a remote file to a directory
 func loadRemoteCheatsheetToCache(url string, filepath string) error {
 
 	// Load from URL
 	resp, err := http.Get(url)
-	if err != nil {
-		fmt.Println(err)
-	}
+	ExitIf(err)
+
 	defer resp.Body.Close()
 
 	// Create the file
 	out, err := os.Create(filepath)
-	if err != nil {
-		return err
-	}
+	ExitIf(err)
+
 	defer out.Close()
 
 	// Write the body to file
@@ -73,51 +84,47 @@ func loadRemoteCheatsheetToCache(url string, filepath string) error {
 	return err
 }
 
-func printCheatsheet(sheet Cheatsheet) {
-	fmt.Println(sheet.Name)
-	fmt.Println(sheet.Remote)
-	fmt.Println(sheet.Cheats)
+// Prints out the Cheatsheet struct to console
+func printCheatsheet(sheet Cheatsheet, colored bool) {
+
+	k := color.FgWhite.Render
+	v := color.FgWhite.Render
+
+	if colored {
+		k = color.FgCyan.Render
+		v = color.FgGreen.Render
+	}
+
+	for key, value := range sheet.Cheats {
+		fmt.Printf("%s \t %s\n", k(key), v(value))
+	}
 }
 
+// Where the magic happens
 func main() {
 	flag.StringVar(&sheet, "sheet", "", "Cheatsheet to display")
 	flag.StringVar(&sheetDir, "sheetdir", "examples", "Directory of local Cheatsheets")
 	flag.StringVar(&cacheDir, "cachedir", "/tmp/cheat", "Cache directory of remote Cheatsheets")
-	flag.BoolVar(&colored, "colored", true, "Display colored output")
+	flag.BoolVar(&colored, "colored", false, "Display colored output")
 	flag.Parse()
 
 	Sheet, err := readCheatsheet(path.Join(sheetDir, sheet + ".json"))
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	ExitIf(err)
 
 	if Sheet.Remote {
 		cachedFile := path.Join(cacheDir, sheet + ".json")
 		url := Sheet.Url
 
-		Sheet, err = readCheatsheet(cachedFile)
-		// File probably not in cache, downloading it...
-		if err != nil {
+		if _, err := os.Stat(cachedFile); os.IsNotExist(err) {
+			// File not in cache, trying to download it...
 			checkOrCreateDir(cacheDir)
-			if err != nil {
-				// Chould not create cache
-				fmt.Println(err)
-				os.Exit(1)
-			}
-
 			loadRemoteCheatsheetToCache(url, cachedFile)
-			Sheet, err = readCheatsheet(cachedFile)
 		}
-
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-
+		Sheet, err = readCheatsheet(cachedFile)
+		ExitIf(err)
 	}
 
-	printCheatsheet(Sheet)
+	printCheatsheet(Sheet, colored)
 
 	os.Exit(0)
 }

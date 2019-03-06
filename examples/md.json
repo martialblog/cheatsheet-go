@@ -1,5 +1,5 @@
 {
   "name": "Markdown",
   "remote": true,
-  "url": "https://raw.githubusercontent.com/vision-it/vision-puppet/production/metadata.json"
+  "url": "https://raw.githubusercontent.com/martialblog/cheatsheet-go/master/examples/md-remote.json"
 }

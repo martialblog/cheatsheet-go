@@ -1,0 +1,9 @@
+{
+  "name": "md-remove",
+  "remote": false,
+  "cheats": {
+    "#": "Headline 1",
+    "##": "Headline 2",
+    "![alt text][image]": "Image with Text"
+  }
+}
